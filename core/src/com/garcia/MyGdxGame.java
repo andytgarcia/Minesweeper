@@ -10,3 +10,7 @@ public class MyGdxGame extends Game {
 		setScreen(new GameScreen());
 	}
 }
+//MineSweeeper: 1-8 = # of bombs; 9 = bomb; 0 = no bomb
+// +10 -> empty tile
+//+20 -> marked tile
+//+30 question tile
