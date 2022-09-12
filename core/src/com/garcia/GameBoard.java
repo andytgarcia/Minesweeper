@@ -36,42 +36,45 @@ public class GameBoard {
     }
 
     public boolean isValidLoc(int row, int col) {
-        return row >=0 && row < board.length && col >=0 && col < board[0].length;
+        return row >= 0 && row < board.length && col >= 0 && col < board[0].length;
     }
 
     public void handleClick(int x, int y) {
 
         //change windows x y coordinate to 2d array loc
-        int rowClicked = (y-10)/25;
-        int colClicked = (x-10)/25;
+        int rowClicked = (y - 10) / 25;
+        int colClicked = (x - 10) / 25;
+
 
         if (isValidLoc(rowClicked, colClicked)) {
-            board[rowClicked][colClicked] = board[rowClicked][colClicked] % 10;
             if (firstClick) {
                 firstClick = false;
                 placeBombs(rowClicked, colClicked);
                 initBoardNumbers();
+
             }
+            startSpace(rowClicked, colClicked);
+            board[rowClicked][colClicked] = board[rowClicked][colClicked] % 10;
+
         }
 
     }
 
     private void placeBombs(int rowClicked, int colClicked) {
         int bombCount = 0;
-        while(bombCount < 99) {
-           int randomRow = (int)(Math.random() * board.length);
-           int randomCol = (int) (Math.random() * board[0].length);
+        while (bombCount < 99) {
+            int randomRow = (int) (Math.random() * board.length);
+            int randomCol = (int) (Math.random() * board[0].length);
 
-           if (randomRow != rowClicked && randomCol != colClicked) {
-               if (board[randomRow][randomCol] == EMPTYTILE) {
-                   board[randomRow][randomCol] = BOMB+10;
-                   bombCount++;
-               }
-           }
+            if (randomRow != rowClicked && randomCol != colClicked) {
+                if (board[randomRow][randomCol] == EMPTYTILE) {
+                    board[randomRow][randomCol] = BOMB + 10;
+                    bombCount++;
+                }
             }
-        System.out.println("bombs placed: " + bombCount);
         }
-
+        System.out.println("bombs placed: " + bombCount);
+    }
 
 
     public void draw(SpriteBatch spriteBatch) {
@@ -104,6 +107,7 @@ public class GameBoard {
             }
         }
     }
+
     private void initEmptyBoard() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -111,6 +115,7 @@ public class GameBoard {
             }
         }
     }
+
     private ArrayList<Location> getNeighbors(int row, int col) {
         ArrayList<Location> ans = new ArrayList<>();
 
@@ -121,22 +126,22 @@ public class GameBoard {
         else {
             if (isValidLoc(row - 1, col)) {
                 ans.add(new Location(row - 1, col));
-                }
+            }
             if (isValidLoc(row - 1, col + 1)) {
-                ans.add(new Location(row -1, col + 1));
+                ans.add(new Location(row - 1, col + 1));
             }
             if (isValidLoc(row, col + 1))
                 ans.add(new Location(row, col + 1));
-            if (isValidLoc(row + 1, col+1))
-                ans.add(new Location(row + 1, col+1));
-            if (isValidLoc(row +1, col))
-                ans.add(new Location(row+1, col));
-            if (isValidLoc(row +1, col -1))
-                ans.add(new Location(row + 1, col -1));
-            if (isValidLoc(row, col -1))
-                ans.add(new Location(row, col -1));
-            if (isValidLoc(row -1, col -1))
-                ans.add(new Location(row -1, col -1));
+            if (isValidLoc(row + 1, col + 1))
+                ans.add(new Location(row + 1, col + 1));
+            if (isValidLoc(row + 1, col))
+                ans.add(new Location(row + 1, col));
+            if (isValidLoc(row + 1, col - 1))
+                ans.add(new Location(row + 1, col - 1));
+            if (isValidLoc(row, col - 1))
+                ans.add(new Location(row, col - 1));
+            if (isValidLoc(row - 1, col - 1))
+                ans.add(new Location(row - 1, col - 1));
 
         }
         return ans;
@@ -146,7 +151,7 @@ public class GameBoard {
         ArrayList<Location> locs = getNeighbors(row, col);
 
         int count = 0;
-        for (Location temp: locs) {
+        for (Location temp : locs) {
             if (board[temp.getRow()][temp.getCol()] % 10 == BOMB) {
                 count++;
             }
@@ -154,8 +159,9 @@ public class GameBoard {
 
         return count;
     }
+
     private void initBoardNumbers() {
-        for(int row = 0; row < board.length; row++) {
+        for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[row].length; col++) {
                 if (board[row][col] % 10 != BOMB) {
                     int numOfbombs = bombsAroundLoc(row, col);
@@ -165,7 +171,27 @@ public class GameBoard {
         }
     }
 
+    private void startSpace(int row, int col) {
+        //get neighbors, set the tile to emppty by modding it by ten, if neighboring tile is empty, call method again
+        ArrayList<Location> locs = getNeighbors(row, col);
+
+        if (board[row][col] != 0) {
+            board[row][col] = board[row][col] % 10;
+
+            if (board[row][col] == 0) {
+                for (int i = 0; i < locs.size(); i++) {
+                    startSpace(locs.get(i).getRow(), locs.get(i).getCol());
+                }
+            }
 
 
+            //for (int i = 0; i < locs.size(); i++) {
+            //if (board[locs.get(i).getRow()][locs.get(i).getCol()] % 10 == 0) {
+            //startSpace(locs.get(i).getRow(), locs.get(i).getCol());
+            //}
+            //}
+
+        }
+
+    }
 }
-
