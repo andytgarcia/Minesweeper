@@ -8,8 +8,10 @@ import java.util.ArrayList;
 public class GameBoard {
     private int[][] board;
     private boolean firstClick = true;
+    public static boolean isGameOver = false;
 
     private Texture emptyTile;
+    private Texture flagTile;
     private Texture questionTile;
     private Texture bombTile;
     private Texture emptyFloor;
@@ -32,6 +34,7 @@ public class GameBoard {
         sixTile = new Texture("sixTile.jpg");
         sevenTile = new Texture("sevenTile.jpg");
         eightTile = new Texture("eightTile.jpg");
+        flagTile = new Texture("flagTile.jpg");
 
     }
 
@@ -52,19 +55,40 @@ public class GameBoard {
                 placeBombs(rowClicked, colClicked);
                 initBoardNumbers();
 
+
+
             }
             startSpace(rowClicked, colClicked);
             board[rowClicked][colClicked] = board[rowClicked][colClicked] % 10;
+            if (board[rowClicked][colClicked] == BOMB)
+                isGameOver = true;
+
 
         }
 
     }
 
+    public void handleRightClick(int x, int y) {
+        int rowClicked = (y - 10) / 25;
+        int colClicked = (x - 10) / 25;
+
+        if (isValidLoc(rowClicked, colClicked) && board[rowClicked][colClicked] != 0) {
+            board[rowClicked][colClicked] = FLAGGEDTILE;
+        }
+        else if (board[rowClicked][colClicked] == FLAGGEDTILE)
+            board[rowClicked][colClicked] %= 10;
+    }
+
     private void placeBombs(int rowClicked, int colClicked) {
+        ArrayList<Location> locs = new ArrayList<>(getNeighbors(rowClicked, colClicked));
         int bombCount = 0;
         while (bombCount < 99) {
             int randomRow = (int) (Math.random() * board.length);
             int randomCol = (int) (Math.random() * board[0].length);
+
+            for (int i = 0; i < locs.size(); i++) {
+                board[locs.get(i).getRow()][ locs.get(i).getCol()] = 0;
+            }
 
             if (randomRow != rowClicked && randomCol != colClicked) {
                 if (board[randomRow][randomCol] == EMPTYTILE) {
@@ -102,6 +126,9 @@ public class GameBoard {
                     spriteBatch.draw(sevenTile, 10 + (col * 25), (600 - 35) - (row * 25));
                 } else if (board[row][col] == 8) {
                     spriteBatch.draw(eightTile, 10 + (col * 25), (600 - 35) - (row * 25));
+                }
+                else if (board[row][col] == FLAGGEDTILE) {
+                    spriteBatch.draw(flagTile, 10 + (col * 25), (600 - 35) - (row * 25));
                 }
 
             }
@@ -173,11 +200,9 @@ public class GameBoard {
 
     private void startSpace(int row, int col) {
         //get neighbors, set the tile to emppty by modding it by ten, if neighboring tile is empty, call method again
-        ArrayList<Location> locs = getNeighbors(row, col);
-
+        ArrayList<Location> locs = new ArrayList<>(getNeighbors(row, col));
         if (board[row][col] != 0) {
             board[row][col] = board[row][col] % 10;
-
             if (board[row][col] == 0) {
                 for (int i = 0; i < locs.size(); i++) {
                     startSpace(locs.get(i).getRow(), locs.get(i).getCol());
@@ -185,13 +210,8 @@ public class GameBoard {
             }
 
 
-            //for (int i = 0; i < locs.size(); i++) {
-            //if (board[locs.get(i).getRow()][locs.get(i).getCol()] % 10 == 0) {
-            //startSpace(locs.get(i).getRow(), locs.get(i).getCol());
-            //}
-            //}
-
         }
 
     }
+
 }

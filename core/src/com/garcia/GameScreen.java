@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.w3c.dom.Text;
 
+
 public class GameScreen implements Screen {
     public void clearScreen(){
         Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -46,6 +47,8 @@ public class GameScreen implements Screen {
     private int mouseX =-10;
     private int mouseY = -10;
 
+
+
     BitmapFont tempFont = new BitmapFont();
 
     @Override
@@ -74,6 +77,14 @@ public class GameScreen implements Screen {
         }
     }
 
+    public void handleRightClick() {
+        if (Gdx.input.isButtonJustPressed(((Input.Buttons.RIGHT)))){
+            mouseX = Gdx.input.getX();
+            mouseY = Gdx.input.getY();
+            board.handleRightClick(mouseX, mouseY);
+        }
+    }
+
     @Override
     public void render(float delta) {
         //clears the screen
@@ -81,6 +92,7 @@ public class GameScreen implements Screen {
 
         //handle player input
         handleClick();
+        handleRightClick();
 
         //A.I. updates
 
@@ -90,6 +102,8 @@ public class GameScreen implements Screen {
         tempFont.draw(spriteBatch, "Clicked at (" + mouseX + " , " + mouseY + " )", 400, 100);
         tempFont.draw(spriteBatch, "row: " + (mouseY-10)/25, 400, 50);
         tempFont.draw(spriteBatch, "col: " + (mouseX-10)/25, 500, 50);
+        if (GameBoard.isGameOver == true)
+            tempFont.draw(spriteBatch, "You Lost!", 450, 500);
 
         spriteBatch.end();
     }
