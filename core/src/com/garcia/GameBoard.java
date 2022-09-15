@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class GameBoard {
     private int[][] board;
     private boolean firstClick = true;
-    public static boolean isGameOver = false;
+    public static boolean isGameLost = false;
 
     private Texture emptyTile;
     private Texture flagTile;
@@ -61,7 +61,7 @@ public class GameBoard {
             startSpace(rowClicked, colClicked);
             board[rowClicked][colClicked] = board[rowClicked][colClicked] % 10;
             if (board[rowClicked][colClicked] == BOMB)
-                isGameOver = true;
+                isGameLost = true;
 
 
         }
@@ -76,7 +76,7 @@ public class GameBoard {
             board[rowClicked][colClicked] = FLAGGEDTILE;
         }
         else if (board[rowClicked][colClicked] == FLAGGEDTILE)
-            board[rowClicked][colClicked] %= 10;
+            board[rowClicked][colClicked] %= 20;
     }
 
     private void placeBombs(int rowClicked, int colClicked) {

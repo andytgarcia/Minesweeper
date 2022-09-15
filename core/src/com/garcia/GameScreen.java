@@ -6,18 +6,21 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import org.w3c.dom.Text;
 
 
 public class GameScreen implements Screen {
     public void clearScreen(){
         Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    public void loseScreen(){
+        Gdx.gl.glClearColor(1,0,0,0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
@@ -102,9 +105,11 @@ public class GameScreen implements Screen {
         tempFont.draw(spriteBatch, "Clicked at (" + mouseX + " , " + mouseY + " )", 400, 100);
         tempFont.draw(spriteBatch, "row: " + (mouseY-10)/25, 400, 50);
         tempFont.draw(spriteBatch, "col: " + (mouseX-10)/25, 500, 50);
-        if (GameBoard.isGameOver == true)
-            tempFont.draw(spriteBatch, "You Lost!", 450, 500);
-
+        tempFont.draw(spriteBatch, "MINESWEEPER", 100, 95);
+        if (GameBoard.isGameLost) {
+            tempFont.draw(spriteBatch, "You Lost!", 350, 500);
+            this.loseScreen();
+        }
         spriteBatch.end();
     }
 
